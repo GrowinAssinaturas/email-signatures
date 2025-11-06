@@ -1,67 +1,3 @@
-<!doctype html>
-<html lang="pt">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Assinaturas Growin — Builder</title>
-<style>
-  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;margin:24px;color:#111}
-  .wrap{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
-  label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#555;margin:12px 0 4px}
-  input{width:100%;padding:10px 12px;border:1px solid #d0d0d0;border-radius:8px;font-size:14px}
-  .card{border:1px solid #e6e6e6;border-radius:12px;padding:16px}
-  .btn{display:inline-block;border:0;border-radius:10px;padding:12px 14px;font-weight:600;cursor:pointer}
-  .btn-primary{background:#e6443b;color:#fff}
-  .btn-ghost{background:#f6f6f6}
-  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .hint{font-size:12px;color:#666;margin-top:6px}
-  .muted{color:#777}
-  .preview-wrap{background:#fff;border:1px dashed #ddd;border-radius:12px;padding:16px;overflow:auto}
-  .ok{color:#0a8a3a;font-weight:600}
-  .err{color:#b00020}
-  @media (max-width:900px){.wrap{grid-template-columns:1fr}}
-</style>
-</head>
-<body>
-<h1>Assinaturas Growin — Builder</h1>
-<p class="muted" id="boot">Builder loaded ✅</p>
-
-<div class="wrap">
-  <div class="card">
-    <label for="name">Nome</label>
-    <input id="name" placeholder="Filipa Freire" value="Filipa Freire">
-
-    <label for="title">Cargo</label>
-    <input id="title" placeholder="GRAPHIC DESIGNER" value="GRAPHIC DESIGNER">
-
-    <label for="hobby">Hobby</label>
-    <input id="hobby" placeholder="Crochet Crafter" value="Crochet Crafter">
-
-    <label for="mobile">Telemóvel pessoal (como deve aparecer)</label>
-    <input id="mobile" placeholder="(+351) 934 556 060" value="(+351) 934 556 060">
-
-    <label for="photo">URL da foto (PNG 240×240 já com aro/círculo)</label>
-    <input id="photo" placeholder="https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png" value="https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png">
-
-    <label for="assetHost">Host das imagens fixas (logo, ícones, selo)</label>
-    <input id="assetHost" placeholder="https://growinassinaturas.github.io/email-signatures" value="https://growinassinaturas.github.io/email-signatures">
-
-    <div class="row">
-      <button id="copyBtn" class="btn btn-primary">Copiar assinatura</button>
-      <button id="copyHtmlBtn" class="btn btn-ghost">Copiar HTML</button>
-      <button id="linkBtn" class="btn btn-ghost">Gerar link desta assinatura</button>
-    </div>
-    <div id="status" class="hint"></div>
-  </div>
-
-  <div>
-    <div class="preview-wrap">
-      <div id="preview"></div>
-    </div>
-    <p class="hint">1) Clica “Copiar assinatura” → 2) Cola em Gmail/Outlook/Apple Mail. (É só a <em>tabela</em>, com estilos inline, própria para e-mail).</p>
-  </div>
-</div>
-
 <script>
 const qs = (s)=>document.querySelector(s);
 const encode = (s)=>encodeURIComponent(s ?? "");
@@ -159,16 +95,24 @@ function render(){
   catch(e){ qs("#preview").innerHTML=""; status("Erro a gerar preview: "+e.message, false); }
 }
 
-function copySignature(){
-  try{
-    const html=signatureHTML(state);
-    const tmp=document.createElement("div"); tmp.innerHTML=html.trim();
-    const table=tmp.firstElementChild;
-    const range=document.createRange(); range.selectNode(table);
-    const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(range);
-    const ok=document.execCommand("copy"); sel.removeAllRanges();
-    status(ok?"Assinatura copiada!":"Não consegui copiar automaticamente.", ok);
-  }catch(e){ status("Erro a copiar: "+e.message, false); }
+// NEW: open page with only the signature
+function openSignatureOnly(){
+  readForm();
+  const table = signatureHTML(state);
+  const doc = `
+<!doctype html>
+<meta charset="utf-8">
+<title>Assinatura — ${state.name}</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+  body{margin:24px;font-family:Arial,Helvetica,sans-serif;background:#fff}
+</style>
+${table}
+`;
+  const w = window.open("", "_blank");
+  if(!w){ status("O navegador bloqueou o pop-up. Permite pop-ups para este site.", false); return; }
+  w.document.open(); w.document.write(doc); w.document.close();
+  status("Assinatura aberta numa nova página.", true);
 }
 
 async function copyRawHTML(){
@@ -203,7 +147,8 @@ function status(msg,ok){
 ["#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
   qs(id)?.addEventListener("input",()=>{readForm();render();});
 });
-qs("#copyBtn")?.addEventListener("click",(e)=>{e.preventDefault();readForm();copySignature();});
+// Change: main button now opens the isolated page
+qs("#copyBtn")?.addEventListener("click",(e)=>{e.preventDefault();openSignatureOnly();});
 qs("#copyHtmlBtn")?.addEventListener("click",(e)=>{e.preventDefault();readForm();copyRawHTML();});
 qs("#linkBtn")?.addEventListener("click",(e)=>{e.preventDefault();genLink();});
 
@@ -218,5 +163,3 @@ qs("#linkBtn")?.addEventListener("click",(e)=>{e.preventDefault();genLink();});
   readForm(); render();
 })();
 </script>
-</body>
-</html>
