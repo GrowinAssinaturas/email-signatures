@@ -42,10 +42,10 @@
     <input id="mobile" placeholder="(+351) 934 556 060" value="(+351) 934 556 060">
 
     <label for="photo">URL da foto (PNG 240×240 já com aro/círculo)</label>
-    <input id="photo" placeholder="https://teu-host/images/foto-filipa.png" value="https://SEU_HOST/images/foto-colaborador.png">
+    <input id="photo" placeholder="https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png" value="https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png">
 
     <label for="assetHost">Host das imagens fixas (logo, ícones, selo)</label>
-    <input id="assetHost" placeholder="https://teu-host/images" value="https://SEU_HOST/images">
+    <input id="assetHost" placeholder="https://growinassinaturas.github.io/email-signatures" value="https://growinassinaturas.github.io/email-signatures">
 
     <div class="row">
       <button id="copyBtn" class="btn btn-primary">Copiar assinatura</button>
@@ -53,7 +53,6 @@
       <button id="linkBtn" class="btn btn-ghost">Gerar link desta assinatura</button>
     </div>
     <div id="status" class="hint"></div>
-    <p class="hint">Dica: põe o teu <strong>asset host</strong> uma vez (ex.: <code>https://teuuser.github.io/teurepo/images</code> ou <code>https://cdn.jsdelivr.net/gh/teuuser/teurepo@main/images</code>).</p>
   </div>
 
   <!-- Preview -->
@@ -66,52 +65,40 @@
 </div>
 
 <script>
-  // --- Helpers ---
   const qs = (s)=>document.querySelector(s);
   const encode = (s)=>encodeURIComponent(s ?? "");
   const digitsHref = (s)=> {
     const raw = (s||"").replace(/[^\d+]/g,"");
-    // se começar sem +351 e tiver 9 dígitos, prefixa Portugal
     if(/^9\d{8}$/.test(raw)) return "+351"+raw;
     return raw || "+3519XXXXXXXX";
   };
 
-  // --- Modelo de assinatura (HTML email-safe com estilos inline) ---
- function signatureHTML({name, title, hobby, mobile, photo, host}) {
-  const telHref = (mobile||"").replace(/[^\d+]/g,"") || "+3519XXXXXXXX";
-  const H = (host||"https://growinassinaturas.github.io/email-signatures").replace(/\/+$/,'');
+  function signatureHTML({name, title, hobby, mobile, photo, host}) {
+    const telHref = digitsHref(mobile);
+    const H = (host||"https://growinassinaturas.github.io/email-signatures").replace(/\/+$/,'');
 
-  return `
+    return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; font-family: Arial, Helvetica, sans-serif; color:#333; -webkit-text-size-adjust:100%; mso-line-height-rule:exactly;">
   <tr>
-    <!-- FOTO -->
     <td valign="top" style="padding:12px 16px 12px 0;">
       <img src="${photo}" width="120" height="120" alt="Foto de ${name}" style="display:block; border:0; outline:0; width:120px; height:120px;">
     </td>
-
-    <!-- BLOCO ESQUERDO -->
     <td valign="top" style="padding:12px 24px 12px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
         <tr><td style="font-size:22px; line-height:1.1; font-weight:800; color:#e6443b; padding:0 0 4px 0;">${name}</td></tr>
         <tr><td style="font-size:16px; line-height:1.25; font-weight:700; color:#555; padding:0 0 12px 0;">${title} | ${hobby}</td></tr>
-
-        <!-- Telemóvel pessoal -->
         <tr>
           <td style="font-size:16px; line-height:1.3; color:#444; padding:0 0 6px 0;">
             <strong style="color:#e6443b;">T:</strong>
             <a href="tel:${telHref}" style="color:#444; text-decoration:none;">${mobile}</a>
           </td>
         </tr>
-
-        <!-- Telefone fixo -->
         <tr>
           <td style="font-size:14px; line-height:1.3; color:#666; padding:0 0 6px 0;">
             <img src="${H}/icon-telemovel.png" width="16" height="16" alt="" style="display:inline-block; vertical-align:-3px; border:0; margin-right:6px;">
             <a href="tel:+351215947950" style="color:#666; text-decoration:none;">(+351) 215 947 950</a>
           </td>
         </tr>
-
-        <!-- Morada -->
         <tr>
           <td style="font-size:14px; line-height:1.3; color:#666;">
             <img src="${H}/icon-local.png" width="16" height="16" alt="" style="display:inline-block; vertical-align:-3px; border:0; margin-right:6px;">
@@ -120,15 +107,11 @@
         </tr>
       </table>
     </td>
-
-    <!-- DIVISÓRIA VERTICAL -->
     <td valign="middle" style="padding:0 24px 0 0;">
-      <table role="presentation" height="120" cellpadding="0" cellspacing="0" border="0">
-        <tr><td style="border-left:2px solid #e6443b; font-size:0; line-height:0;">&nbsp;</td></tr>
-      </table>
+      <table role="presentation" height="120" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="border-left:2px solid #e6443b; font-size:0; line-height:0;">&nbsp;</td>
+      </tr></table>
     </td>
-
-    <!-- BLOCO DIREITO -->
     <td valign="top" style="padding:12px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
         <tr>
@@ -151,9 +134,8 @@
     </td>
   </tr>
 </table>`;
-}
+  }
 
-  // --- Estado / bindings ---
   const state = {
     name: qs("#name").value,
     title: qs("#title").value,
@@ -169,93 +151,72 @@
       title: qs("#title").value.trim() || "CARGO",
       hobby: qs("#hobby").value.trim() || "Hobby",
       mobile: qs("#mobile").value.trim() || "(+351) 9XX XXX XXX",
-      photo: qs("#photo").value.trim() || "https://SEU_HOST/images/foto-colaborador.png",
-      host: qs("#assetHost").value.trim() || "https://SEU_HOST/images"
+      photo: qs("#photo").value.trim() || "https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png",
+      host: qs("#assetHost").value.trim() || "https://growinassinaturas.github.io/email-signatures"
     });
   }
 
-  function render() {
-    qs("#preview").innerHTML = signatureHTML(state);
-  }
+  function render(){ qs("#preview").innerHTML = signatureHTML(state); }
 
-  function copySignature() {
+  function copySignature(){
     const html = signatureHTML(state);
-    // cria um container para selecionar apenas a tabela
     const tmp = document.createElement("div");
     tmp.innerHTML = html.trim();
     const table = tmp.firstElementChild;
-
     const range = document.createRange();
     range.selectNode(table);
     const sel = window.getSelection();
     sel.removeAllRanges();
     sel.addRange(range);
-
-    let ok = false;
-    // tenta copiar como rich HTML
-    try {
-      ok = document.execCommand("copy");
-    } catch(e){ ok = false; }
+    let ok=false;
+    try{ok=document.execCommand("copy");}catch(e){ok=false;}
     sel.removeAllRanges();
-
-    status(ok ? "Assinatura copiada! Agora cola no cliente de e-mail." : "Não consegui copiar automaticamente. Seleciona e copia manualmente.", ok);
+    status(ok?"Assinatura copiada!":"Não consegui copiar automaticamente.",ok);
   }
 
-  async function copyRawHTML() {
-    const html = signatureHTML(state).trim();
-    try {
-      if (navigator.clipboard && window.ClipboardItem) {
-        const blob = new Blob([html], {type: "text/html"});
-        await navigator.clipboard.write([new ClipboardItem({ "text/html": blob })]);
-      } else {
-        const ta = document.createElement("textarea");
-        ta.value = html;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand("copy");
-        ta.remove();
+  async function copyRawHTML(){
+    const html=signatureHTML(state).trim();
+    try{
+      if(navigator.clipboard&&window.ClipboardItem){
+        const blob=new Blob([html],{type:"text/html"});
+        await navigator.clipboard.write([new ClipboardItem({"text/html":blob})]);
+      }else{
+        const ta=document.createElement("textarea");
+        ta.value=html;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
       }
-      status("HTML copiado para a área de transferência.", true);
-    } catch(e){
-      status("Não consegui copiar o HTML. Tenta selecionar e copiar manualmente.", false);
-    }
+      status("HTML copiado para a área de transferência.",true);
+    }catch(e){status("Não consegui copiar o HTML.",false);}
   }
 
-  function genLink() {
+  function genLink(){
     readForm();
-    const base = location.origin + location.pathname;
-    const u = `${base}?name=${encode(state.name)}&title=${encode(state.title)}&hobby=${encode(state.hobby)}&mobile=${encode(state.mobile)}&photo=${encode(state.photo)}&host=${encode(state.host)}`;
+    const base=location.origin+location.pathname;
+    const u=`${base}?name=${encode(state.name)}&title=${encode(state.title)}&hobby=${encode(state.hobby)}&mobile=${encode(state.mobile)}&photo=${encode(state.photo)}&host=${encode(state.host)}`;
     navigator.clipboard?.writeText(u);
-    status("Link gerado e copiado. Partilha esse URL com a pessoa.", true);
+    status("Link gerado e copiado.",true);
     alert(u);
   }
 
-  function status(msg, ok){
-    const el = qs("#status");
-    el.innerHTML = (ok?'<span class="ok">OK</span> ':'<span class="err">Ops</span> ') + msg;
-  }
+  function status(msg,ok){qs("#status").innerHTML=(ok?'<span class="ok">OK</span> ':'<span class="err">Ops</span> ')+msg;}
 
-  // liga eventos
   ["#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
-    qs(id).addEventListener("input", ()=>{ readForm(); render(); });
+    qs(id).addEventListener("input",()=>{readForm();render();});
   });
-  qs("#copyBtn").addEventListener("click", (e)=>{ e.preventDefault(); readForm(); copySignature(); });
-  qs("#copyHtmlBtn").addEventListener("click", (e)=>{ e.preventDefault(); readForm(); copyRawHTML(); });
-  qs("#linkBtn").addEventListener("click", (e)=>{ e.preventDefault(); genLink(); });
+  qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();readForm();copySignature();});
+  qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();readForm();copyRawHTML();});
+  qs("#linkBtn").addEventListener("click",e=>{e.preventDefault();genLink();});
 
-  // Prefill via querystring (para partilhar links prontos)
   (function fromQuery(){
-    const q = new URLSearchParams(location.search);
-    if(q.get("name")) qs("#name").value = q.get("name");
-    if(q.get("title")) qs("#title").value = q.get("title");
-    if(q.get("hobby")) qs("#hobby").value = q.get("hobby");
-    if(q.get("mobile")) qs("#mobile").value = q.get("mobile");
-    if(q.get("photo")) qs("#photo").value = q.get("photo");
-    if(q.get("host")) qs("#assetHost").value = q.get("host");
-    readForm(); render();
+    const q=new URLSearchParams(location.search);
+    if(q.get("name"))qs("#name").value=q.get("name");
+    if(q.get("title"))qs("#title").value=q.get("title");
+    if(q.get("hobby"))qs("#hobby").value=q.get("hobby");
+    if(q.get("mobile"))qs("#mobile").value=q.get("mobile");
+    if(q.get("photo"))qs("#photo").value=q.get("photo");
+    if(q.get("host"))qs("#assetHost").value=q.get("host");
+    readForm();render();
   })();
 
-  // 1º render
   render();
 </script>
 </body>
