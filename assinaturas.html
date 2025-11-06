@@ -60,7 +60,6 @@
 
 <script>
 const qs = s=>document.querySelector(s);
-const encode = s=>encodeURIComponent(s ?? "");
 const digitsHref = s=>{
   const raw=(s||"").replace(/[^\d+]/g,"");
   if(/^9\d{8}$/.test(raw)) return "+351"+raw;
@@ -73,42 +72,42 @@ function signatureHTML({name, title, hobby, mobile, photo, host}){
 
   return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0"
- style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#333;font-size:90%;">
+ style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#333;font-size:60%;">
 <tr>
   <!-- FOTO -->
-  <td valign="top" style="padding:12px 16px 12px 0;">
-    <img src="${photo}" width="120" height="120" alt="Foto de ${name}"
-      style="display:block;border:0;width:120px;height:120px;border-radius:50%;">
+  <td valign="top" style="padding:8px 12px 8px 0;">
+    <img src="${photo}" width="80" height="80" alt="Foto de ${name}"
+      style="display:block;border:0;width:80px;height:80px;border-radius:50%;">
   </td>
 
   <!-- BLOCO ESQUERDO -->
-  <td valign="top" style="padding:12px 24px 12px 0;">
+  <td valign="top" style="padding:8px 16px 8px 0;">
     <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-      <tr><td style="font-size:22px;font-weight:800;color:#e6443b;">${name}</td></tr>
-      <tr><td style="font-size:16px;font-weight:700;color:#555;">${title} | ${hobby}</td></tr>
+      <tr><td style="font-size:16px;font-weight:800;color:#e6443b;">${name}</td></tr>
+      <tr><td style="font-size:12px;font-weight:700;color:#555;">${title} | ${hobby}</td></tr>
 
       <tr>
-        <td style="font-size:16px;color:#444;padding:6px 0;">
+        <td style="font-size:12px;color:#444;padding:4px 0;">
           <strong style="color:#e6443b;">T:</strong>
           <a href="tel:${telHref}" style="color:#444;text-decoration:none;">${mobile}</a>
         </td>
       </tr>
 
       <tr>
-        <td style="font-size:14px;color:#666;padding:4px 0;">
-          <span style="display:inline-block;background:#e6443b;width:24px;height:24px;border-radius:50%;
-                text-align:center;line-height:24px;margin-right:6px;">
-            <img src="${H}/icon-telemovel.png" width="12" height="12" style="vertical-align:middle;">
+        <td style="font-size:11px;color:#666;padding:3px 0;">
+          <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;
+                text-align:center;line-height:18px;margin-right:5px;">
+            <img src="${H}/icon-telemovel.png" width="9" height="9" style="vertical-align:middle;">
           </span>
           <a href="tel:+351215947950" style="color:#666;text-decoration:none;">(+351) 215 947 950</a>
         </td>
       </tr>
 
       <tr>
-        <td style="font-size:14px;color:#666;">
-          <span style="display:inline-block;background:#e6443b;width:24px;height:24px;border-radius:50%;
-                text-align:center;line-height:24px;margin-right:6px;">
-            <img src="${H}/icon-local.png" width="12" height="12" style="vertical-align:middle;">
+        <td style="font-size:11px;color:#666;">
+          <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;
+                text-align:center;line-height:18px;margin-right:5px;">
+            <img src="${H}/icon-local.png" width="9" height="9" style="vertical-align:middle;">
           </span>
           Avenida da República, 57, 4.º andar, 1050-189, Lisbon
         </td>
@@ -117,37 +116,37 @@ function signatureHTML({name, title, hobby, mobile, photo, host}){
   </td>
 
   <!-- DIVISÓRIA -->
-  <td valign="middle" style="padding:0 24px 0 0;">
-    <table role="presentation" height="120"><tr>
+  <td valign="middle" style="padding:0 16px 0 0;">
+    <table role="presentation" height="80"><tr>
       <td style="border-left:2px solid #e6443b;">&nbsp;</td>
     </tr></table>
   </td>
 
   <!-- BLOCO DIREITO -->
-  <td valign="top" style="padding:12px 0;">
+  <td valign="middle" style="padding:8px 0;">
     <table role="presentation">
       <tr>
-        <td style="padding:0 0 12px 0;">
+        <td style="padding:0 0 6px 0;">
           <img src="${H}/growin-logo.png" alt="Growin"
-               style="display:block;max-width:160px;height:auto;">
+               style="display:block;max-width:110px;height:auto;">
         </td>
       </tr>
       <tr>
-        <td>
+        <td style="vertical-align:middle;">
           <a href="https://www.growin.com/" target="_blank"
-             style="display:inline-block;background:#e6443b;width:32px;height:32px;
-                    border-radius:50%;text-align:center;margin-right:8px;">
-            <img src="${H}/icon-website.png" width="14" height="14" style="margin-top:9px;">
+             style="display:inline-block;background:#e6443b;width:22px;height:22px;
+                    border-radius:50%;text-align:center;margin-right:4px;">
+            <img src="${H}/icon-website.png" width="10" height="10" style="margin-top:6px;">
           </a>
 
           <a href="https://www.linkedin.com/company/growin/" target="_blank"
-             style="display:inline-block;background:#e6443b;width:32px;height:32px;
-                    border-radius:50%;text-align:center;margin-right:8px;">
-            <img src="${H}/icon-linkedin.png" width="14" height="14" style="margin-top:9px;">
+             style="display:inline-block;background:#e6443b;width:22px;height:22px;
+                    border-radius:50%;text-align:center;margin-right:4px;">
+            <img src="${H}/icon-linkedin.png" width="10" height="10" style="margin-top:6px;">
           </a>
 
           <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017"
-               style="max-width:90px;height:auto;vertical-align:middle;">
+               style="max-width:70px;height:auto;vertical-align:middle;margin-top:-2px;">
         </td>
       </tr>
     </table>
