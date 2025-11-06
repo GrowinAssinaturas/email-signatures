@@ -87,29 +87,31 @@ function signatureHTML({name, title, hobby, mobile, photo, host}){
       <tr><td style="font-size:12px;font-weight:700;color:#555;">${title} | ${hobby}</td></tr>
 
       <tr>
-        <td style="font-size:12px;color:#444;padding:4px 0;">
+        <td style="font-size:12px;color:#444;padding:4px 0;text-decoration:none!important;">
           <strong style="color:#e6443b;">T:</strong>
-          <a href="tel:${telHref}" style="color:#444;text-decoration:none;">${mobile}</a>
+          <a href="tel:${telHref}" 
+             style="color:#444;text-decoration:none!important;border:none!important;">${mobile}</a>
         </td>
       </tr>
 
       <tr>
-        <td style="font-size:11px;color:#666;padding:3px 0;">
+        <td style="font-size:11px;color:#666;padding:3px 0;text-decoration:none!important;">
           <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;
                 text-align:center;line-height:18px;margin-right:5px;">
             <img src="${H}/icon-telemovel.png" width="9" height="9" style="vertical-align:middle;">
           </span>
-          <a href="tel:+351215947950" style="color:#666;text-decoration:none;">(+351) 215 947 950</a>
+          <a href="tel:+351215947950" 
+             style="color:#666;text-decoration:none!important;border:none!important;">(+351) 215 947 950</a>
         </td>
       </tr>
 
       <tr>
-        <td style="font-size:11px;color:#666;">
+        <td style="font-size:11px;color:#666;text-decoration:none!important;">
           <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;
                 text-align:center;line-height:18px;margin-right:5px;">
             <img src="${H}/icon-local.png" width="9" height="9" style="vertical-align:middle;">
           </span>
-          Avenida da República, 57, 4.º andar, 1050-189, Lisbon
+          Avenida da República, 57, 4.º andar, 1050-189, Lisboa
         </td>
       </tr>
     </table>
