@@ -27,7 +27,6 @@
 <p class="muted">Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo | Hobby</strong> e <strong>Telemóvel pessoal</strong>. O resto é fixo. Botões do Website e LinkedIn já apontam para os links oficiais.</p>
 
 <div class="wrap">
-  <!-- Formulário -->
   <div class="card">
     <label for="name">Nome</label>
     <input id="name" placeholder="Filipa Freire" value="Filipa Freire">
@@ -55,7 +54,6 @@
     <div id="status" class="hint"></div>
   </div>
 
-  <!-- Preview -->
   <div>
     <div class="preview-wrap">
       <div id="preview"></div>
@@ -80,9 +78,12 @@
     return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; font-family: Arial, Helvetica, sans-serif; color:#333; -webkit-text-size-adjust:100%; mso-line-height-rule:exactly;">
   <tr>
+    <!-- FOTO -->
     <td valign="top" style="padding:12px 16px 12px 0;">
       <img src="${photo}" width="120" height="120" alt="Foto de ${name}" style="display:block; border:0; outline:0; width:120px; height:120px;">
     </td>
+
+    <!-- BLOCO ESQUERDO -->
     <td valign="top" style="padding:12px 24px 12px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
         <tr><td style="font-size:22px; line-height:1.1; font-weight:800; color:#e6443b; padding:0 0 4px 0;">${name}</td></tr>
@@ -107,11 +108,15 @@
         </tr>
       </table>
     </td>
+
+    <!-- DIVISÓRIA VERTICAL -->
     <td valign="middle" style="padding:0 24px 0 0;">
-      <table role="presentation" height="120" cellpadding="0" cellspacing="0" border="0"><tr>
-        <td style="border-left:2px solid #e6443b; font-size:0; line-height:0;">&nbsp;</td>
-      </tr></table>
+      <table role="presentation" height="120" cellpadding="0" cellspacing="0" border="0">
+        <tr><td style="border-left:2px solid #e6443b; font-size:0; line-height:0;">&nbsp;</td></tr>
+      </table>
     </td>
+
+    <!-- BLOCO DIREITO -->
     <td valign="top" style="padding:12px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
         <tr>
@@ -120,14 +125,19 @@
           </td>
         </tr>
         <tr>
-          <td>
-            <a href="https://www.growin.com/" target="_blank" style="text-decoration:none;">
-              <img src="${H}/icon-website.png" width="32" height="32" alt="Website" style="display:inline-block; border:0; width:32px; height:32px; margin-right:8px;">
+          <td style="padding-top:4px;">
+            <!-- Website button -->
+            <a href="https://www.growin.com/" target="_blank" style="text-decoration:none; display:inline-block; background:#e6443b; width:32px; height:32px; line-height:32px; text-align:center; border-radius:50%; margin-right:8px;">
+              <img src="${H}/icon-website.png" width="16" height="16" alt="Website" style="display:inline-block; border:0; vertical-align:middle;">
             </a>
-            <a href="https://www.linkedin.com/company/growin/" target="_blank" style="text-decoration:none;">
-              <img src="${H}/icon-linkedin.png" width="32" height="32" alt="LinkedIn" style="display:inline-block; border:0; width:32px; height:32px; margin-right:8px;">
+
+            <!-- LinkedIn button -->
+            <a href="https://www.linkedin.com/company/growin/" target="_blank" style="text-decoration:none; display:inline-block; background:#e6443b; width:32px; height:32px; line-height:32px; text-align:center; border-radius:50%; margin-right:8px;">
+              <img src="${H}/icon-linkedin.png" width="16" height="16" alt="LinkedIn" style="display:inline-block; border:0; vertical-align:middle;">
             </a>
-            <img src="${H}/certificacao-iso.png" width="120" height="48" alt="BSI ISO/IEC 27017" style="display:inline-block; border:0; width:120px; height:48px; vertical-align:middle;">
+
+            <!-- ISO certification -->
+            <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017" style="display:inline-block; border:0; max-width:120px; height:auto; vertical-align:middle;">
           </td>
         </tr>
       </table>
