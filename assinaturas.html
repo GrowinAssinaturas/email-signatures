@@ -63,56 +63,62 @@
 </div>
 
 <script>
-  const qs = (s)=>document.querySelector(s);
-  const encode = (s)=>encodeURIComponent(s ?? "");
-  const digitsHref = (s)=> {
-    const raw = (s||"").replace(/[^\d+]/g,"");
-    if(/^9\d{8}$/.test(raw)) return "+351"+raw;
-    return raw || "+3519XXXXXXXX";
-  };
+const qs = (s)=>document.querySelector(s);
+const encode = (s)=>encodeURIComponent(s ?? "");
+const digitsHref = (s)=> {
+  const raw = (s||"").replace(/[^\d+]/g,"");
+  if(/^9\\d{8}$/.test(raw)) return "+351"+raw;
+  return raw || "+3519XXXXXXXX";
+};
 
-  function signatureHTML({name, title, hobby, mobile, photo, host}) {
-    const telHref = digitsHref(mobile);
-    const H = (host||"https://growinassinaturas.github.io/email-signatures").replace(/\/+$/,'');
+function signatureHTML({name, title, hobby, mobile, photo, host}) {
+  const telHref = digitsHref(mobile);
+  const H = (host||"https://growinassinaturas.github.io/email-signatures").replace(/\\/+$/,'');
 
-    return `
-<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; font-family: Arial, Helvetica, sans-serif; color:#333; -webkit-text-size-adjust:100%; mso-line-height-rule:exactly;">
+  return `
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#333;-webkit-text-size-adjust:100%;mso-line-height-rule:exactly;">
   <tr>
     <!-- FOTO -->
     <td valign="top" style="padding:12px 16px 12px 0;">
-      <img src="${photo}" width="120" height="120" alt="Foto de ${name}" style="display:block; border:0; outline:0; width:120px; height:120px;">
+      <img src="${photo}" width="120" height="120" alt="Foto de ${name}" style="display:block;border:0;outline:0;width:120px;height:120px;">
     </td>
 
     <!-- BLOCO ESQUERDO -->
     <td valign="top" style="padding:12px 24px 12px 0;">
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
-        <tr><td style="font-size:22px; line-height:1.1; font-weight:800; color:#e6443b; padding:0 0 4px 0;">${name}</td></tr>
-        <tr><td style="font-size:16px; line-height:1.25; font-weight:700; color:#555; padding:0 0 12px 0;">${title} | ${hobby}</td></tr>
+        <tr><td style="font-size:22px;line-height:1.1;font-weight:800;color:#e6443b;padding:0 0 4px 0;">${name}</td></tr>
+        <tr><td style="font-size:16px;line-height:1.25;font-weight:700;color:#555;padding:0 0 12px 0;">${title} | ${hobby}</td></tr>
         <tr>
-          <td style="font-size:16px; line-height:1.3; color:#444; padding:0 0 6px 0;">
+          <td style="font-size:16px;line-height:1.3;color:#444;padding:0 0 6px 0;">
             <strong style="color:#e6443b;">T:</strong>
-            <a href="tel:${telHref}" style="color:#444; text-decoration:none;">${mobile}</a>
+            <a href="tel:${telHref}" style="color:#444;text-decoration:none;">${mobile}</a>
           </td>
         </tr>
+        <!-- Telefone fixo -->
         <tr>
-          <td style="font-size:14px; line-height:1.3; color:#666; padding:0 0 6px 0;">
-            <img src="${H}/icon-telemovel.png" width="16" height="16" alt="" style="display:inline-block; vertical-align:-3px; border:0; margin-right:6px;">
-            <a href="tel:+351215947950" style="color:#666; text-decoration:none;">(+351) 215 947 950</a>
+          <td style="font-size:14px;line-height:1.3;color:#666;padding:0 0 6px 0;">
+            <span style="display:inline-block;background:#e6443b;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;margin-right:6px;">
+              <img src="${H}/icon-telemovel.png" width="12" height="12" alt="" style="display:inline-block;vertical-align:middle;border:0;">
+            </span>
+            <a href="tel:+351215947950" style="color:#666;text-decoration:none;">(+351) 215 947 950</a>
           </td>
         </tr>
+        <!-- Morada -->
         <tr>
-          <td style="font-size:14px; line-height:1.3; color:#666;">
-            <img src="${H}/icon-local.png" width="16" height="16" alt="" style="display:inline-block; vertical-align:-3px; border:0; margin-right:6px;">
+          <td style="font-size:14px;line-height:1.3;color:#666;">
+            <span style="display:inline-block;background:#e6443b;width:24px;height:24px;border-radius:50%;text-align:center;line-height:24px;margin-right:6px;">
+              <img src="${H}/icon-local.png" width="12" height="12" alt="" style="display:inline-block;vertical-align:middle;border:0;">
+            </span>
             Avenida da República, 57, 4.º andar, 1050-189, Lisbon
           </td>
         </tr>
       </table>
     </td>
 
-    <!-- DIVISÓRIA VERTICAL -->
+    <!-- DIVISÓRIA -->
     <td valign="middle" style="padding:0 24px 0 0;">
       <table role="presentation" height="120" cellpadding="0" cellspacing="0" border="0">
-        <tr><td style="border-left:2px solid #e6443b; font-size:0; line-height:0;">&nbsp;</td></tr>
+        <tr><td style="border-left:2px solid #e6443b;font-size:0;line-height:0;">&nbsp;</td></tr>
       </table>
     </td>
 
@@ -121,113 +127,113 @@
       <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
         <tr>
           <td style="padding:0 0 12px 0;">
-            <img src="${H}/growin-logo.png" width="160" height="40" alt="Growin" style="display:block; border:0; width:160px; height:40px;">
+            <img src="${H}/growin-logo.png" alt="Growin" style="display:block;border:0;max-width:160px;height:auto;">
           </td>
         </tr>
         <tr>
           <td style="padding-top:4px;">
-            <!-- Website button -->
-            <a href="https://www.growin.com/" target="_blank" style="text-decoration:none; display:inline-block; background:#e6443b; width:32px; height:32px; line-height:32px; text-align:center; border-radius:50%; margin-right:8px;">
-              <img src="${H}/icon-website.png" width="16" height="16" alt="Website" style="display:inline-block; border:0; vertical-align:middle;">
+            <!-- Website -->
+            <a href="https://www.growin.com/" target="_blank" style="text-decoration:none;display:inline-block;background:#e6443b;width:32px;height:32px;border-radius:50%;text-align:center;vertical-align:middle;margin-right:8px;">
+              <img src="${H}/icon-website.png" width="14" height="14" alt="Website" style="display:inline-block;vertical-align:middle;margin-top:9px;border:0;">
             </a>
 
-            <!-- LinkedIn button -->
-            <a href="https://www.linkedin.com/company/growin/" target="_blank" style="text-decoration:none; display:inline-block; background:#e6443b; width:32px; height:32px; line-height:32px; text-align:center; border-radius:50%; margin-right:8px;">
-              <img src="${H}/icon-linkedin.png" width="16" height="16" alt="LinkedIn" style="display:inline-block; border:0; vertical-align:middle;">
+            <!-- LinkedIn -->
+            <a href="https://www.linkedin.com/company/growin/" target="_blank" style="text-decoration:none;display:inline-block;background:#e6443b;width:32px;height:32px;border-radius:50%;text-align:center;vertical-align:middle;margin-right:8px;">
+              <img src="${H}/icon-linkedin.png" width="14" height="14" alt="LinkedIn" style="display:inline-block;vertical-align:middle;margin-top:9px;border:0;">
             </a>
 
-            <!-- ISO certification -->
-            <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017" style="display:inline-block; border:0; max-width:120px; height:auto; vertical-align:middle;">
+            <!-- ISO -->
+            <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017" style="display:inline-block;border:0;max-width:120px;height:auto;vertical-align:middle;">
           </td>
         </tr>
       </table>
     </td>
   </tr>
 </table>`;
-  }
+}
 
-  const state = {
-    name: qs("#name").value,
-    title: qs("#title").value,
-    hobby: qs("#hobby").value,
-    mobile: qs("#mobile").value,
-    photo: qs("#photo").value,
-    host: qs("#assetHost").value
-  };
+const state = {
+  name: qs("#name").value,
+  title: qs("#title").value,
+  hobby: qs("#hobby").value,
+  mobile: qs("#mobile").value,
+  photo: qs("#photo").value,
+  host: qs("#assetHost").value
+};
 
-  function readForm() {
-    Object.assign(state, {
-      name: qs("#name").value.trim() || "NOME APELIDO",
-      title: qs("#title").value.trim() || "CARGO",
-      hobby: qs("#hobby").value.trim() || "Hobby",
-      mobile: qs("#mobile").value.trim() || "(+351) 9XX XXX XXX",
-      photo: qs("#photo").value.trim() || "https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png",
-      host: qs("#assetHost").value.trim() || "https://growinassinaturas.github.io/email-signatures"
-    });
-  }
-
-  function render(){ qs("#preview").innerHTML = signatureHTML(state); }
-
-  function copySignature(){
-    const html = signatureHTML(state);
-    const tmp = document.createElement("div");
-    tmp.innerHTML = html.trim();
-    const table = tmp.firstElementChild;
-    const range = document.createRange();
-    range.selectNode(table);
-    const sel = window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-    let ok=false;
-    try{ok=document.execCommand("copy");}catch(e){ok=false;}
-    sel.removeAllRanges();
-    status(ok?"Assinatura copiada!":"Não consegui copiar automaticamente.",ok);
-  }
-
-  async function copyRawHTML(){
-    const html=signatureHTML(state).trim();
-    try{
-      if(navigator.clipboard&&window.ClipboardItem){
-        const blob=new Blob([html],{type:"text/html"});
-        await navigator.clipboard.write([new ClipboardItem({"text/html":blob})]);
-      }else{
-        const ta=document.createElement("textarea");
-        ta.value=html;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
-      }
-      status("HTML copiado para a área de transferência.",true);
-    }catch(e){status("Não consegui copiar o HTML.",false);}
-  }
-
-  function genLink(){
-    readForm();
-    const base=location.origin+location.pathname;
-    const u=`${base}?name=${encode(state.name)}&title=${encode(state.title)}&hobby=${encode(state.hobby)}&mobile=${encode(state.mobile)}&photo=${encode(state.photo)}&host=${encode(state.host)}`;
-    navigator.clipboard?.writeText(u);
-    status("Link gerado e copiado.",true);
-    alert(u);
-  }
-
-  function status(msg,ok){qs("#status").innerHTML=(ok?'<span class="ok">OK</span> ':'<span class="err">Ops</span> ')+msg;}
-
-  ["#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
-    qs(id).addEventListener("input",()=>{readForm();render();});
+function readForm() {
+  Object.assign(state, {
+    name: qs("#name").value.trim() || "NOME APELIDO",
+    title: qs("#title").value.trim() || "CARGO",
+    hobby: qs("#hobby").value.trim() || "Hobby",
+    mobile: qs("#mobile").value.trim() || "(+351) 9XX XXX XXX",
+    photo: qs("#photo").value.trim() || "https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png",
+    host: qs("#assetHost").value.trim() || "https://growinassinaturas.github.io/email-signatures"
   });
-  qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();readForm();copySignature();});
-  qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();readForm();copyRawHTML();});
-  qs("#linkBtn").addEventListener("click",e=>{e.preventDefault();genLink();});
+}
 
-  (function fromQuery(){
-    const q=new URLSearchParams(location.search);
-    if(q.get("name"))qs("#name").value=q.get("name");
-    if(q.get("title"))qs("#title").value=q.get("title");
-    if(q.get("hobby"))qs("#hobby").value=q.get("hobby");
-    if(q.get("mobile"))qs("#mobile").value=q.get("mobile");
-    if(q.get("photo"))qs("#photo").value=q.get("photo");
-    if(q.get("host"))qs("#assetHost").value=q.get("host");
-    readForm();render();
-  })();
+function render(){ qs("#preview").innerHTML = signatureHTML(state); }
 
-  render();
+function copySignature(){
+  const html = signatureHTML(state);
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html.trim();
+  const table = tmp.firstElementChild;
+  const range = document.createRange();
+  range.selectNode(table);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  let ok=false;
+  try{ok=document.execCommand("copy");}catch(e){ok=false;}
+  sel.removeAllRanges();
+  status(ok?"Assinatura copiada!":"Não consegui copiar automaticamente.",ok);
+}
+
+async function copyRawHTML(){
+  const html=signatureHTML(state).trim();
+  try{
+    if(navigator.clipboard&&window.ClipboardItem){
+      const blob=new Blob([html],{type:"text/html"});
+      await navigator.clipboard.write([new ClipboardItem({"text/html":blob})]);
+    }else{
+      const ta=document.createElement("textarea");
+      ta.value=html;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();
+    }
+    status("HTML copiado para a área de transferência.",true);
+  }catch(e){status("Não consegui copiar o HTML.",false);}
+}
+
+function genLink(){
+  readForm();
+  const base=location.origin+location.pathname;
+  const u=`${base}?name=${encode(state.name)}&title=${encode(state.title)}&hobby=${encode(state.hobby)}&mobile=${encode(state.mobile)}&photo=${encode(state.photo)}&host=${encode(state.host)}`;
+  navigator.clipboard?.writeText(u);
+  status("Link gerado e copiado.",true);
+  alert(u);
+}
+
+function status(msg,ok){qs("#status").innerHTML=(ok?'<span class="ok">OK</span> ':'<span class="err">Ops</span> ')+msg;}
+
+["#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
+  qs(id).addEventListener("input",()=>{readForm();render();});
+});
+qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();readForm();copySignature();});
+qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();readForm();copyRawHTML();});
+qs("#linkBtn").addEventListener("click",e=>{e.preventDefault();genLink();});
+
+(function fromQuery(){
+  const q=new URLSearchParams(location.search);
+  if(q.get("name"))qs("#name").value=q.get("name");
+  if(q.get("title"))qs("#title").value=q.get("title");
+  if(q.get("hobby"))qs("#hobby").value=q.get("hobby");
+  if(q.get("mobile"))qs("#mobile").value=q.get("mobile");
+  if(q.get("photo"))qs("#photo").value=q.get("photo");
+  if(q.get("host"))qs("#assetHost").value=q.get("host");
+  readForm();render();
+})();
+
+render();
 </script>
 </body>
 </html>
