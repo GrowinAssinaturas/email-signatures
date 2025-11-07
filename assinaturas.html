@@ -14,36 +14,39 @@
   .btn-primary{background:#e6443b;color:#fff}
   .btn-ghost{background:#f6f6f6}
   .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-  .hint{font-size:12px;color:#666;margin-top:6px}
-  .muted{color:#777}
   .preview-wrap{background:#fff;border:1px dashed #ddd;border-radius:12px;padding:16px;overflow:auto}
-  @media (max-width:900px){.wrap{grid-template-columns:1fr}}
+
+  /* --- Email-responsive helpers (Gmail mobile supports these) --- */
+  @media screen and (max-width:480px){
+    .sig-wrap{font-size:70% !important;}               /* a touch larger on tiny screens for legibility */
+    .sig-col{display:block !important;width:100% !important;}
+    .sig-divider{display:none !important;}
+    .sig-right{ text-align:center !important; }
+    .sig-logo{ max-width:170px !important; margin:8px auto 6px !important; display:block !important;}
+    .sig-icons td{padding:0 6px !important;}
+    .sig-photo{ width:64px !important; height:64px !important; }
+    .sig-iso{ max-width:56px !important; }
+  }
 </style>
 </head>
 <body>
 <h1>Assinaturas Growin — Builder</h1>
-<p class="muted">Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo | Hobby</strong> e <strong>Telemóvel pessoal</strong>. O resto é fixo.</p>
+<p style="color:#777">Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo | Hobby</strong> e <strong>Telemóvel pessoal</strong>. O resto é fixo.</p>
 
 <div class="wrap">
   <div class="card">
     <label for="name">Nome</label>
     <input id="name" value="Filipa Freire">
-
     <label for="title">Cargo</label>
     <input id="title" value="GRAPHIC DESIGNER">
-
     <label for="hobby">Hobby</label>
     <input id="hobby" value="Crochet Crafter">
-
     <label for="mobile">Telemóvel pessoal (como deve aparecer)</label>
     <input id="mobile" value="(+351) 934 556 060">
-
     <label for="photo">URL da foto (PNG 240×240 já com aro/círculo)</label>
     <input id="photo" value="https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png">
-
     <label for="assetHost">Host das imagens fixas</label>
     <input id="assetHost" value="https://growinassinaturas.github.io/email-signatures">
-
     <div class="row">
       <button id="copyBtn" class="btn btn-primary">Copiar assinatura</button>
       <button id="copyHtmlBtn" class="btn btn-ghost">Copiar HTML</button>
@@ -59,6 +62,10 @@
 
 <script>
 const qs=s=>document.querySelector(s);
+
+/* Build non-breaking display for numbers to stop Gmail mobile wrapping */
+function nobreak(str){ return (str||"").trim().replace(/\s+/g,'&nbsp;'); }
+
 const digitsHref=s=>{
   const raw=(s||"").replace(/[^\d+]/g,"");
   if(/^9\d{8}$/.test(raw)) return "+351"+raw;
@@ -66,66 +73,85 @@ const digitsHref=s=>{
 };
 
 function signatureHTML({name,title,hobby,mobile,photo,host}){
-  const telHref=digitsHref(mobile);
   const H=(host||"https://growinassinaturas.github.io/email-signatures").replace(/\/+$/,"");
+  const telHref=digitsHref(mobile);
+  const mobileNB=nobreak(mobile);
+
   return `
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="sig-wrap"
  style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#333;font-size:60%;">
 <tr>
-  <td valign="top" style="padding:8px 12px 8px 0;">
+  <!-- COL ESQ -->
+  <td class="sig-col" valign="top" style="padding:8px 12px 8px 0;">
     <img src="${photo}" width="80" height="80" alt="Foto de ${name}"
-         style="display:block;border:0;width:80px;height:80px;border-radius:50%;">
+         class="sig-photo" style="display:block;border:0;width:80px;height:80px;border-radius:50%;">
   </td>
-  <td valign="top" style="padding:8px 16px 8px 0;">
-    <table role="presentation">
+
+  <td class="sig-col" valign="top" style="padding:8px 16px 8px 0;">
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
       <tr><td style="font-size:16px;font-weight:800;color:#e6443b;">${name}</td></tr>
       <tr><td style="font-size:12px;font-weight:700;color:#555;">${title} | ${hobby}</td></tr>
-      <tr><td style="font-size:12px;color:#444;padding:4px 0;"><strong style="color:#e6443b;">T:</strong>
-          <a href="tel:${telHref}" style="color:#444;text-decoration:none!important;border:none!important;">${mobile}</a></td></tr>
-      <tr><td style="font-size:11px;color:#666;padding:3px 0;">
+
+      <tr>
+        <td style="font-size:12px;color:#444;padding:4px 0;text-decoration:none!important;">
+          <strong style="color:#e6443b;">T:</strong>
+          <a href="tel:${telHref}" style="color:#444;text-decoration:none!important;border:none!important;white-space:nowrap!important;">${mobileNB}</a>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="font-size:11px;color:#666;padding:3px 0;text-decoration:none!important;">
           <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;line-height:18px;margin-right:5px;">
-            <img src="${H}/icon-telemovel.png" width="9" height="9" style="vertical-align:middle;"></span>
-          <a href="tel:+351215947950" style="color:#666;text-decoration:none!important;border:none!important;">(+351) 215 947 950</a></td></tr>
-      <tr><td style="font-size:11px;color:#666;">
+            <img src="${H}/icon-telemovel.png" width="9" height="9" style="vertical-align:middle;border:0;">
+          </span>
+          <a href="tel:+351215947950" style="color:#666;text-decoration:none!important;border:none!important;white-space:nowrap!important;">(+351)&nbsp;215&nbsp;947&nbsp;950</a>
+        </td>
+      </tr>
+
+      <tr>
+        <td style="font-size:11px;color:#666;text-decoration:none!important;">
           <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;line-height:18px;margin-right:5px;">
-            <img src="${H}/icon-local.png" width="9" height="9" style="vertical-align:middle;"></span>
-          Avenida da República, 57, 4.º andar, 1050-189, Lisboa</td></tr>
+            <img src="${H}/icon-local.png" width="9" height="9" style="vertical-align:middle;border:0;">
+          </span>
+          Avenida&nbsp;da&nbsp;República,&nbsp;57,&nbsp;4.º&nbsp;andar,&nbsp;1050-189,&nbsp;Lisboa
+        </td>
+      </tr>
     </table>
   </td>
 
-  <td valign="middle" style="padding:0 16px 0 0;">
+  <!-- DIVISÓRIA -->
+  <td class="sig-divider" valign="middle" style="padding:0 16px 0 0;">
     <table role="presentation" height="80"><tr><td style="border-left:2px solid #e6443b;">&nbsp;</td></tr></table>
   </td>
 
-  <td valign="middle" style="padding:8px 0;">
-    <table role="presentation" align="center">
+  <!-- COL DIR -->
+  <td class="sig-col sig-right" valign="middle" style="padding:8px 0;">
+    <table role="presentation" align="center" style="border-collapse:collapse;margin:0 auto;">
       <tr>
         <td align="center" style="padding-bottom:6px;">
           <img src="${H}/growin-logo.png" alt="Growin"
-               style="display:block;margin:0 auto;max-width:170px;height:auto;">
+               class="sig-logo" style="display:block;margin:0 auto;max-width:170px;height:auto;border:0;">
         </td>
       </tr>
       <tr>
         <td align="center">
-          <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center">
+          <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="sig-icons" style="border-collapse:collapse;margin:0 auto;">
             <tr>
               <td valign="middle" style="padding-right:6px;">
                 <a href="https://www.growin.com/" target="_blank"
-                   style="display:inline-block;background:#e6443b;width:22px;height:22px;
-                          border-radius:50%;text-align:center;">
+                   style="display:inline-block;background:#e6443b;width:22px;height:22px;border-radius:50%;text-align:center;">
                   <img src="${H}/icon-website.png" width="10" height="10" style="margin-top:6px;border:0;">
                 </a>
               </td>
               <td valign="middle" style="padding-right:8px;">
                 <a href="https://www.linkedin.com/company/growin/" target="_blank"
-                   style="display:inline-block;background:#e6443b;width:22px;height:22px;
-                          border-radius:50%;text-align:center;">
+                   style="display:inline-block;background:#e6443b;width:22px;height:22px;border-radius:50%;text-align:center;">
                   <img src="${H}/icon-linkedin.png" width="10" height="10" style="margin-top:6px;border:0;">
                 </a>
               </td>
               <td valign="middle">
                 <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017"
-                     style="max-width:60px;height:auto;vertical-align:middle;border:0;">
+                     class="sig-iso" style="max-width:60px;height:auto;vertical-align:middle;border:0;">
               </td>
             </tr>
           </table>
@@ -134,26 +160,28 @@ function signatureHTML({name,title,hobby,mobile,photo,host}){
     </table>
   </td>
 </tr>
-</table>`;}
+</table>`;
+}
+
+/* --- Builder plumbing --- */
 const state={};
 function readForm(){Object.assign(state,{
   name:qs("#name").value||"NOME APELIDO",
   title:qs("#title").value||"CARGO",
   hobby:qs("#hobby").value||"Hobby",
   mobile:qs("#mobile").value||"(+351) 9XX XXX XXX",
-  photo:qs("#photo").value,
-  host:qs("#assetHost").value});}
+  photo:qs("#photo").value||"https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png",
+  host:qs("#assetHost").value||"https://growinassinaturas.github.io/email-signatures"
+});}
 function render(){qs("#preview").innerHTML=signatureHTML(state);}
-function openSignatureOnly(){readForm();
+function openSignatureOnly(){
+  readForm();
   const sig=signatureHTML(state);
-  const doc=`<!doctype html><meta charset='utf-8'><body style="margin:24px;font-family:Arial,Helvetica,sans-serif;">${sig}</body>`;
-  const w=window.open("","_blank");w.document.write(doc);w.document.close();}
-async function copyRawHTML(){readForm();
-  const html=signatureHTML(state).trim();
-  await navigator.clipboard.writeText(html);
-  alert("HTML copiado!");}
-["#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
-  qs(id).addEventListener("input",()=>{readForm();render();});});
+  const doc=`<!doctype html><meta charset='utf-8'><meta name="viewport" content="width=device-width,initial-scale=1"><body style="margin:24px;font-family:Arial,Helvetica,sans-serif;">${sig}</body>`;
+  const w=window.open("","_blank");w.document.write(doc);w.document.close();
+}
+async function copyRawHTML(){readForm();const html=signatureHTML(state).trim();await navigator.clipboard.writeText(html);alert("HTML copiado!");}
+["#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>qs(id).addEventListener("input",()=>{readForm();render();}));
 qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();openSignatureOnly();});
 qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();copyRawHTML();});
 readForm();render();
