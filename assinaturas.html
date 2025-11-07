@@ -21,11 +21,11 @@
     .sig-wrap{font-size:70% !important;}
     .sig-col{display:block !important;width:100% !important;}
     .sig-divider{display:none !important;}
-    .sig-right{ text-align:center !important; }
-    .sig-logo{ max-width:170px !important; margin:8px auto 6px !important; display:block !important;}
+    .sig-right{text-align:center !important;}
+    .sig-logo{max-width:170px !important;margin:8px auto 6px !important;display:block !important;}
     .sig-icons td{padding:0 6px !important;}
-    .sig-photo{ width:64px !important; height:64px !important; }
-    .sig-iso{ max-width:56px !important; }
+    .sig-photo{width:64px !important;height:64px !important;}
+    .sig-iso{max-width:56px !important;}
   }
 </style>
 </head>
@@ -105,7 +105,7 @@ function signatureHTML({name,title,hobby,mobile,photo,host}){
     <table role="presentation" align="center">
       <tr><td align="center" style="padding-bottom:6px;">
         <img src="${H}/growin-logo.png" alt="Growin"
-             class="sig-logo" style="display:block;margin:0 auto;max-width:170px;height:auto;border:0;"></td></tr>
+             class="sig-logo" style="display:block;margin:0 auto;max-width:190px;height:auto;border:0;"></td></tr>
       <tr><td align="center">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="sig-icons">
           <tr>
@@ -121,7 +121,7 @@ function signatureHTML({name,title,hobby,mobile,photo,host}){
               </a></td>
             <td valign="middle">
               <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017"
-                   class="sig-iso" style="max-width:60px;height:auto;vertical-align:middle;border:0;">
+                   class="sig-iso" style="max-width:52px;height:auto;vertical-align:middle;border:0;">
             </td>
           </tr>
         </table>
@@ -160,19 +160,28 @@ qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();openSignatureOnly
 qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();copyRawHTML();});
 qs("#copyLinkBtn").addEventListener("click",e=>{e.preventDefault();copyLinkToClipboard();});
 
-/* --- PAGE MODE DETECTION --- */
-const params=new URLSearchParams(location.search);
-if(params.size){
-  const d=k=>decodeURIComponent((params.get(k)||"").replace(/\+/g," "));
-  const preset={
-    name:d("n"),title:d("t"),hobby:d("h"),mobile:d("m"),photo:d("p"),
-    host:d("host")||"https://growinassinaturas.github.io/email-signatures"
+/* --- PAGE MODE DETECTION (FIXED) --- */
+const params = new URLSearchParams(location.search);
+const hasSigParams =
+  params.has("n") || params.has("t") || params.has("h") ||
+  params.has("m") || params.has("p") || params.has("host");
+
+if (hasSigParams) {
+  const d = k => decodeURIComponent((params.get(k) || "").replace(/\+/g, " "));
+  const preset = {
+    name: d("n") || "NOME APELIDO",
+    title: d("t") || "CARGO",
+    hobby: d("h") || "Hobby",
+    mobile: d("m") || "(+351) 9XX XXX XXX",
+    photo: d("p") || "https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png",
+    host: d("host") || "https://growinassinaturas.github.io/email-signatures"
   };
-  document.body.innerHTML=signatureHTML(preset);
-}else{
-  readForm();render();
+  document.body.innerHTML = signatureHTML(preset);
+} else {
+  readForm(); render();
 }
 </script>
 </body>
 </html>
+
 
