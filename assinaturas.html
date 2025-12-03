@@ -24,7 +24,7 @@
     .sig-right{text-align:center !important;}
     .sig-logo{max-width:170px !important;margin:8px auto 6px !important;display:block !important;}
     .sig-icons td{padding:0 6px !important;}
-    .sig-photo{width:64px !important;height:64px !important;}
+    .sig-photo{width:72px !important;height:72px !important;} /* aumentada no mobile */
     .sig-iso{max-width:56px !important;}
   }
 </style>
@@ -43,8 +43,8 @@
     <input id="hobby" value="Crochet Crafter">
     <label for="mobile">Telemóvel pessoal (como deve aparecer)</label>
     <input id="mobile" value="(+351) 934 556 060">
-    <label for="photo">URL da foto (PNG 240×240 já com aro/círculo)</label>
-    <input id="photo" value="https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png">
+    <label for="photo">Nome do ficheiro da foto (PNG 240×240 já com aro/círculo)</label>
+    <input id="photo" value="headshot-filipa-freire.png">
     <label for="assetHost">Host das imagens fixas</label>
     <input id="assetHost" value="https://growinassinaturas.github.io/email-signatures">
     <div class="row">
@@ -66,7 +66,7 @@ const qs=s=>document.querySelector(s);
 function nobreak(str){return (str||"").trim().replace(/\s+/g,'&nbsp;');}
 const digitsHref=s=>{
   const raw=(s||"").replace(/[^\d+]/g,"");
-  if(/^9\\d{8}$/.test(raw)) return "+351"+raw;
+  if(/^9\d{8}$/.test(raw)) return "+351"+raw;
   return raw||"+3519XXXXXXXX";
 };
 
@@ -74,13 +74,23 @@ function signatureHTML({name,title,hobby,mobile,photo,host}){
   const H=(host||"https://growinassinaturas.github.io/email-signatures").replace(/\/+$/,"");
   const telHref=digitsHref(mobile);
   const mobileNB=nobreak(mobile);
+
+  // permite usar só o nome do ficheiro OU um URL completo
+  let photoUrl=(photo||"").trim();
+  if(!photoUrl){
+    photoUrl = `${H}/headshot-default.png`; // se quiseres podes trocar este nome pelo que usarem como default
+  }
+  if(!/^https?:\/\//i.test(photoUrl) && !photoUrl.startsWith("//")){
+    photoUrl = `${H}/${photoUrl.replace(/^\/+/,"")}`;
+  }
+
   return `
 <table role="presentation" cellpadding="0" cellspacing="0" border="0" class="sig-wrap"
  style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#333;font-size:60%;">
 <tr>
   <td class="sig-col" valign="top" style="padding:8px 12px 8px 0;">
-    <img src="${photo}" width="80" height="80" alt="Foto de ${name}"
-         class="sig-photo" style="display:block;border:0;width:80px;height:80px;border-radius:50%;">
+    <img src="${photoUrl}" width="96" height="96" alt="Foto de ${name}"
+         class="sig-photo" style="display:block;border:0;width:96px;height:96px;border-radius:50%;">
   </td>
   <td class="sig-col" valign="top" style="padding:8px 16px 8px 0;">
     <table role="presentation">
@@ -99,7 +109,7 @@ function signatureHTML({name,title,hobby,mobile,photo,host}){
     </table>
   </td>
   <td class="sig-divider" valign="middle" style="padding:0 16px 0 0;">
-    <table role="presentation" height="80"><tr><td style="border-left:2px solid #e6443b;">&nbsp;</td></tr></table>
+    <table role="presentation" height="96"><tr><td style="border-left:2px solid #e6443b;">&nbsp;</td></tr></table>
   </td>
   <td class="sig-col sig-right" valign="middle" style="padding:8px 0;">
     <table role="presentation" align="center">
@@ -173,7 +183,7 @@ if (hasSigParams) {
     title: d("t") || "CARGO",
     hobby: d("h") || "Hobby",
     mobile: d("m") || "(+351) 9XX XXX XXX",
-    photo: d("p") || "https://growinassinaturas.github.io/email-signatures/headshot-filipa-freire.png",
+    photo: d("p") || "headshot-filipa-freire.png",
     host: d("host") || "https://growinassinaturas.github.io/email-signatures"
   };
   document.body.innerHTML = signatureHTML(preset);
@@ -183,5 +193,3 @@ if (hasSigParams) {
 </script>
 </body>
 </html>
-
-
