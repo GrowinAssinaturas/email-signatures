@@ -39,7 +39,7 @@
 <div class="wrap" id="builder-ui">
   <div class="card">
 
-    <!-- NOVO DROPDOWN DE MORADAS -->
+    <!-- DROPDOWN DE MORADAS -->
     <label for="office">Morada</label>
     <select id="office">
       <option value="lisboa">Lisboa — Av. da República</option>
@@ -61,9 +61,6 @@
 
     <label for="photo">Nome do ficheiro da foto (PNG 240×240 já com aro)</label>
     <input id="photo" value="headshot-filipa-freire.png">
-
-    <label for="assetHost">Host das imagens</label>
-    <input id="assetHost" value="https://growinassinaturas.github.io/email-signatures">
 
     <div class="row">
       <button id="copyBtn" class="btn btn-primary">Copiar assinatura</button>
@@ -88,7 +85,11 @@ const digitsHref=s=>{
   return raw||"+3519XXXXXXXX";
 };
 
-/* 🔥 NOVO BLOCO: MAPA DE MORADAS */
+const DEFAULT_HOST = "https://growinassinaturas.github.io/email-signatures";
+const params = new URLSearchParams(location.search);
+const initialHost = params.get("host") || DEFAULT_HOST;
+
+/* MAPA DE MORADAS */
 const ADDRESS_MAP = {
   lisboa: "Avenida da República, 57, 4.º andar, 1050-189, Lisboa",
   porto: "Avenida da Boavista, nº 1773, B2.5, 4100-133 Porto",
@@ -96,7 +97,7 @@ const ADDRESS_MAP = {
 };
 
 function signatureHTML({name,title,hobby,mobile,photo,host,office}){
-  const H=(host||"https://growinassinaturas.github.io/email-signatures").replace(/\/+$/,"");
+  const H=(host||DEFAULT_HOST).replace(/\/+$/,"");
 
   const addrKey = office && ADDRESS_MAP[office] ? office : "lisboa";
   const addressText = ADDRESS_MAP[addrKey];
@@ -105,6 +106,7 @@ function signatureHTML({name,title,hobby,mobile,photo,host,office}){
   const telHref=digitsHref(mobile);
   const mobileNB=nobreak(mobile);
 
+  // nome de ficheiro ou URL completo
   let photoUrl=(photo||"").trim();
   if(!photoUrl){
     photoUrl = `${H}/headshot-default.png`;
@@ -194,17 +196,21 @@ function signatureHTML({name,title,hobby,mobile,photo,host,office}){
 </table>`;
 }
 
-const state={};
-function readForm(){Object.assign(state,{
-  office:qs("#office").value,
-  name:qs("#name").value||"NOME APELIDO",
-  title:qs("#title").value||"CARGO",
-  hobby:qs("#hobby").value||"Hobby",
-  mobile:qs("#mobile").value||"(+351) 9XX XXX XXX",
-  photo:qs("#photo").value,
-  host:qs("#assetHost").value
-});}
+const state = { host: initialHost };
+
+function readForm(){
+  Object.assign(state,{
+    office:qs("#office").value,
+    name:qs("#name").value||"NOME APELIDO",
+    title:qs("#title").value||"CARGO",
+    hobby:qs("#hobby").value||"Hobby",
+    mobile:qs("#mobile").value||"(+351) 9XX XXX XXX",
+    photo:qs("#photo").value
+    // host fica sempre em state.host (DEFAULT_HOST ou o do query)
+  });
+}
 function render(){qs("#preview").innerHTML=signatureHTML(state);}
+
 function buildLink(){
   readForm();
   const base=location.origin+location.pathname;
@@ -223,7 +229,7 @@ function openSignatureOnly(){window.open(buildLink(),"_blank");}
 async function copyRawHTML(){readForm();await navigator.clipboard.writeText(signatureHTML(state));alert("HTML copiado!");}
 async function copyLinkToClipboard(){await navigator.clipboard.writeText(buildLink());alert("Link copiado!");}
 
-["#office","#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
+["#office","#name","#title","#hobby","#mobile","#photo"].forEach(id=>{
   qs(id).addEventListener("input",()=>{readForm();render();});
 });
 qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();openSignatureOnly();});
@@ -231,11 +237,11 @@ qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();copyRawHTML()
 qs("#copyLinkBtn").addEventListener("click",e=>{e.preventDefault();copyLinkToClipboard();});
 
 /* Modo assinatura isolada via URL */
-const params=new URLSearchParams(location.search);
-if(
-  params.has("o")||params.has("n")||params.has("t")||
-  params.has("h")||params.has("m")||params.has("p")||params.has("host")
-){
+const hasSigParams =
+  params.has("n") || params.has("t") || params.has("h") ||
+  params.has("m") || params.has("p"); // host e o NÃO contam para isto
+
+if (hasSigParams){
   const d=k=>decodeURIComponent((params.get(k)||"").replace(/\+/g," "));
   document.body.innerHTML = signatureHTML({
     office:d("o")||"lisboa",
@@ -244,7 +250,7 @@ if(
     hobby:d("h")||"Hobby",
     mobile:d("m")||"(+351) 9XX XXX XXX",
     photo:d("p")||"headshot-filipa-freire.png",
-    host:d("host")||"https://growinassinaturas.github.io/email-signatures"
+    host:d("host")||DEFAULT_HOST
   });
 } else {
   readForm(); render();
