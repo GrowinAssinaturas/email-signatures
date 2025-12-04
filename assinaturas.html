@@ -8,7 +8,7 @@
   body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;margin:24px;color:#111}
   .wrap{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
   label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#555;margin:12px 0 4px}
-  input{width:100%;padding:10px 12px;border:1px solid #d0d0d0;border-radius:8px;font-size:14px}
+  input,select{width:100%;padding:10px 12px;border:1px solid #d0d0d0;border-radius:8px;font-size:14px}
   .card{border:1px solid #e6e6e6;border-radius:12px;padding:16px}
   .btn{display:inline-block;border:0;border-radius:10px;padding:12px 14px;font-weight:600;cursor:pointer}
   .btn-primary{background:#e6443b;color:#fff}
@@ -24,29 +24,47 @@
     .sig-right{text-align:center !important;}
     .sig-logo{max-width:170px !important;margin:8px auto 6px !important;display:block !important;}
     .sig-icons td{padding:0 6px !important;}
-    .sig-photo{width:72px !important;height:72px !important;} /* aumentada no mobile */
+    .sig-photo{width:72px !important;height:72px !important;}
     .sig-iso{max-width:56px !important;}
   }
 </style>
 </head>
 <body>
 <h1 id="title-builder">Assinaturas Growin — Builder</h1>
-<p class="muted" id="desc-builder">Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo | Hobby</strong> e <strong>Telemóvel pessoal</strong>. O resto é fixo.</p>
+<p class="muted" id="desc-builder">
+  Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo | Hobby</strong> e <strong>Telemóvel pessoal</strong>.  
+  Também podes escolher a morada do escritório.
+</p>
 
 <div class="wrap" id="builder-ui">
   <div class="card">
+
+    <!-- NOVO DROPDOWN DE MORADAS -->
+    <label for="office">Morada</label>
+    <select id="office">
+      <option value="lisboa">Lisboa — Av. da República</option>
+      <option value="porto">Porto — Av. da Boavista</option>
+      <option value="bruxelas">Bruxelles — Rue des Colonies</option>
+    </select>
+
     <label for="name">Nome</label>
     <input id="name" value="Filipa Freire">
+
     <label for="title">Cargo</label>
     <input id="title" value="GRAPHIC DESIGNER">
+
     <label for="hobby">Hobby</label>
     <input id="hobby" value="Crochet Crafter">
+
     <label for="mobile">Telemóvel pessoal (como deve aparecer)</label>
     <input id="mobile" value="(+351) 934 556 060">
-    <label for="photo">Nome do ficheiro da foto (PNG 240×240 já com aro/círculo)</label>
+
+    <label for="photo">Nome do ficheiro da foto (PNG 240×240 já com aro)</label>
     <input id="photo" value="headshot-filipa-freire.png">
-    <label for="assetHost">Host das imagens fixas</label>
+
+    <label for="assetHost">Host das imagens</label>
     <input id="assetHost" value="https://growinassinaturas.github.io/email-signatures">
+
     <div class="row">
       <button id="copyBtn" class="btn btn-primary">Copiar assinatura</button>
       <button id="copyHtmlBtn" class="btn btn-ghost">Copiar HTML</button>
@@ -70,15 +88,26 @@ const digitsHref=s=>{
   return raw||"+3519XXXXXXXX";
 };
 
-function signatureHTML({name,title,hobby,mobile,photo,host}){
+/* 🔥 NOVO BLOCO: MAPA DE MORADAS */
+const ADDRESS_MAP = {
+  lisboa: "Avenida da República, 57, 4.º andar, 1050-189, Lisboa",
+  porto: "Avenida da Boavista, nº 1773, B2.5, 4100-133 Porto",
+  bruxelas: "Rue des Colonies, 11, 1000 Bruxelles"
+};
+
+function signatureHTML({name,title,hobby,mobile,photo,host,office}){
   const H=(host||"https://growinassinaturas.github.io/email-signatures").replace(/\/+$/,"");
+
+  const addrKey = office && ADDRESS_MAP[office] ? office : "lisboa";
+  const addressText = ADDRESS_MAP[addrKey];
+  const addressNB = nobreak(addressText);
+
   const telHref=digitsHref(mobile);
   const mobileNB=nobreak(mobile);
 
-  // permite usar só o nome do ficheiro OU um URL completo
   let photoUrl=(photo||"").trim();
   if(!photoUrl){
-    photoUrl = `${H}/headshot-default.png`; // se quiseres podes trocar este nome pelo que usarem como default
+    photoUrl = `${H}/headshot-default.png`;
   }
   if(!/^https?:\/\//i.test(photoUrl) && !photoUrl.startsWith("//")){
     photoUrl = `${H}/${photoUrl.replace(/^\/+/,"")}`;
@@ -92,46 +121,69 @@ function signatureHTML({name,title,hobby,mobile,photo,host}){
     <img src="${photoUrl}" width="96" height="96" alt="Foto de ${name}"
          class="sig-photo" style="display:block;border:0;width:96px;height:96px;border-radius:50%;">
   </td>
+
   <td class="sig-col" valign="top" style="padding:8px 16px 8px 0;">
     <table role="presentation">
       <tr><td style="font-size:16px;font-weight:800;color:#e6443b;">${name}</td></tr>
       <tr><td style="font-size:12px;font-weight:700;color:#555;">${title} | ${hobby}</td></tr>
-      <tr><td style="font-size:12px;color:#444;padding:4px 0;"><strong style="color:#e6443b;">T:</strong>
-        <a href="tel:${telHref}" style="color:#444;text-decoration:none!important;border:none!important;white-space:nowrap!important;">${mobileNB}</a></td></tr>
+
+      <tr><td style="font-size:12px;color:#444;padding:4px 0;">
+        <strong style="color:#e6443b;">T:</strong>
+        <a href="tel:${telHref}" style="color:#444;text-decoration:none;white-space:nowrap;">
+          ${mobileNB}
+        </a>
+      </td></tr>
+
       <tr><td style="font-size:11px;color:#666;padding:3px 0;">
         <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;line-height:18px;margin-right:5px;">
-          <img src="${H}/icon-telemovel.png" width="9" height="9" style="vertical-align:middle;border:0;"></span>
-        <a href="tel:+351215947950" style="color:#666;text-decoration:none!important;border:none!important;white-space:nowrap!important;">(+351)&nbsp;215&nbsp;947&nbsp;950</a></td></tr>
+          <img src="${H}/icon-telemovel.png" width="9" height="9" style="vertical-align:middle;border:0;">
+        </span>
+        <a href="tel:+351215947950" style="color:#666;text-decoration:none;white-space:nowrap;">
+          (+351)&nbsp;215&nbsp;947&nbsp;950
+        </a>
+      </td></tr>
+
       <tr><td style="font-size:11px;color:#666;">
         <span style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;line-height:18px;margin-right:5px;">
-          <img src="${H}/icon-local.png" width="9" height="9" style="vertical-align:middle;border:0;"></span>
-        Avenida&nbsp;da&nbsp;República,&nbsp;57,&nbsp;4.º&nbsp;andar,&nbsp;1050-189,&nbsp;Lisboa</td></tr>
+          <img src="${H}/icon-local.png" width="9" height="9" style="vertical-align:middle;border:0;">
+        </span>
+        ${addressNB}
+      </td></tr>
+
     </table>
   </td>
+
   <td class="sig-divider" valign="middle" style="padding:0 16px 0 0;">
     <table role="presentation" height="96"><tr><td style="border-left:2px solid #e6443b;">&nbsp;</td></tr></table>
   </td>
+
   <td class="sig-col sig-right" valign="middle" style="padding:8px 0;">
     <table role="presentation" align="center">
       <tr><td align="center" style="padding-bottom:6px;">
         <img src="${H}/growin-logo.png" alt="Growin"
-             class="sig-logo" style="display:block;margin:0 auto;max-width:190px;height:auto;border:0;"></td></tr>
+             class="sig-logo" style="display:block;margin:0 auto;max-width:190px;height:auto;">
+      </td></tr>
+
       <tr><td align="center">
         <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="sig-icons">
           <tr>
             <td valign="middle" style="padding-right:6px;">
               <a href="https://www.growin.com/" target="_blank"
                  style="display:inline-block;background:#e6443b;width:22px;height:22px;border-radius:50%;text-align:center;">
-                <img src="${H}/icon-website.png" width="10" height="10" style="margin-top:6px;border:0;">
-              </a></td>
+                <img src="${H}/icon-website.png" width="10" height="10" style="margin-top:6px;">
+              </a>
+            </td>
+
             <td valign="middle" style="padding-right:8px;">
               <a href="https://www.linkedin.com/company/growin/" target="_blank"
                  style="display:inline-block;background:#e6443b;width:22px;height:22px;border-radius:50%;text-align:center;">
-                <img src="${H}/icon-linkedin.png" width="10" height="10" style="margin-top:6px;border:0;">
-              </a></td>
+                <img src="${H}/icon-linkedin.png" width="10" height="10" style="margin-top:6px;">
+              </a>
+            </td>
+
             <td valign="middle">
               <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017"
-                   class="sig-iso" style="max-width:52px;height:auto;vertical-align:middle;border:0;">
+                   class="sig-iso" style="max-width:52px;height:auto;">
             </td>
           </tr>
         </table>
@@ -139,10 +191,12 @@ function signatureHTML({name,title,hobby,mobile,photo,host}){
     </table>
   </td>
 </tr>
-</table>`;}
+</table>`;
+}
 
 const state={};
 function readForm(){Object.assign(state,{
+  office:qs("#office").value,
   name:qs("#name").value||"NOME APELIDO",
   title:qs("#title").value||"CARGO",
   hobby:qs("#hobby").value||"Hobby",
@@ -155,38 +209,43 @@ function buildLink(){
   readForm();
   const base=location.origin+location.pathname;
   const q=new URLSearchParams({
-    n:state.name,t:state.title,h:state.hobby,m:state.mobile,p:state.photo,host:state.host
+    o:state.office,
+    n:state.name,
+    t:state.title,
+    h:state.hobby,
+    m:state.mobile,
+    p:state.photo,
+    host:state.host
   });
   return `${base}?${q.toString()}`;
 }
 function openSignatureOnly(){window.open(buildLink(),"_blank");}
-async function copyRawHTML(){readForm();const html=signatureHTML(state).trim();await navigator.clipboard.writeText(html);alert("HTML copiado!");}
-async function copyLinkToClipboard(){const url=buildLink();await navigator.clipboard.writeText(url);alert("Link copiado!");}
+async function copyRawHTML(){readForm();await navigator.clipboard.writeText(signatureHTML(state));alert("HTML copiado!");}
+async function copyLinkToClipboard(){await navigator.clipboard.writeText(buildLink());alert("Link copiado!");}
 
-["#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
+["#office","#name","#title","#hobby","#mobile","#photo","#assetHost"].forEach(id=>{
   qs(id).addEventListener("input",()=>{readForm();render();});
 });
 qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();openSignatureOnly();});
 qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();copyRawHTML();});
 qs("#copyLinkBtn").addEventListener("click",e=>{e.preventDefault();copyLinkToClipboard();});
 
-/* --- PAGE MODE DETECTION (FIXED) --- */
-const params = new URLSearchParams(location.search);
-const hasSigParams =
-  params.has("n") || params.has("t") || params.has("h") ||
-  params.has("m") || params.has("p") || params.has("host");
-
-if (hasSigParams) {
-  const d = k => decodeURIComponent((params.get(k) || "").replace(/\+/g, " "));
-  const preset = {
-    name: d("n") || "NOME APELIDO",
-    title: d("t") || "CARGO",
-    hobby: d("h") || "Hobby",
-    mobile: d("m") || "(+351) 9XX XXX XXX",
-    photo: d("p") || "headshot-filipa-freire.png",
-    host: d("host") || "https://growinassinaturas.github.io/email-signatures"
-  };
-  document.body.innerHTML = signatureHTML(preset);
+/* Modo assinatura isolada via URL */
+const params=new URLSearchParams(location.search);
+if(
+  params.has("o")||params.has("n")||params.has("t")||
+  params.has("h")||params.has("m")||params.has("p")||params.has("host")
+){
+  const d=k=>decodeURIComponent((params.get(k)||"").replace(/\+/g," "));
+  document.body.innerHTML = signatureHTML({
+    office:d("o")||"lisboa",
+    name:d("n")||"NOME APELIDO",
+    title:d("t")||"CARGO",
+    hobby:d("h")||"Hobby",
+    mobile:d("m")||"(+351) 9XX XXX XXX",
+    photo:d("p")||"headshot-filipa-freire.png",
+    host:d("host")||"https://growinassinaturas.github.io/email-signatures"
+  });
 } else {
   readForm(); render();
 }
