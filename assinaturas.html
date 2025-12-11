@@ -136,18 +136,115 @@ function signatureHTML({name,title,hobby,mobile,photo,host,office}){
         </a>
       </td></tr>
 
-      <tr><td style="font-size:9px;color:#666;padding:2px 0;">
-        <span style="display:inline-block;background:#e6443b;width:14px;height:14px;border-radius:50%;text-align:center;line-height:14px;margin-right:4px;">
-          <img src="${H}/icon-telemovel.png" width="7" height="7" style="vertical-align:middle;border:0;">
-        </span>
-        <a href="tel:+351215947950" style="color:#666;text-decoration:none;white-space:nowrap;">
-          (+351)&nbsp;215&nbsp;947&nbsp;950
-        </a>
-      </td></tr>
-
       <tr><td style="font-size:9px;color:#666;white-space:nowrap;">
         <span style="display:inline-block;background:#e6443b;width:14px;height:14px;border-radius:50%;text-align:center;line-height:14px;margin-right:4px;">
           <img src="${H}/icon-local.png" width="7" height="7" style="vertical-align:middle;border:0;">
         </span>
         ${addressNB}
       </td></tr>
+
+    </table>
+  </td>
+
+  <td class="sig-divider" valign="middle" style="padding:0 13px 0 0;">
+    <table role="presentation" height="84"><tr><td style="border-left:2px solid #e6443b;">&nbsp;</td></tr></table>
+  </td>
+
+  <td class="sig-col sig-right" valign="middle" style="padding:6px 0;">
+    <table role="presentation" align="center">
+      <tr><td align="center" style="padding-bottom:5px;">
+        <img src="${H}/growin-logo.png" alt="Growin"
+             class="sig-logo" style="display:block;margin:0 auto;max-width:152px;height:auto;">
+      </td></tr>
+
+      <tr><td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="sig-icons">
+          <tr>
+            <td valign="middle" style="padding-right:5px;">
+              <a href="https://www.growin.com/" target="_blank"
+                 style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;">
+                <img src="${H}/icon-website.png" width="8" height="8" style="margin-top:5px;border:0;">
+              </a>
+            </td>
+
+            <td valign="middle" style="padding-right:6px;">
+              <a href="https://www.linkedin.com/company/growin/" target="_blank"
+                 style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;">
+                <img src="${H}/icon-linkedin.png" width="8" height="8" style="margin-top:5px;border:0%;">
+              </a>
+            </td>
+
+            <td valign="middle">
+              <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017"
+                   class="sig-iso" style="max-width:42px;height:auto;border:0;">
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </td>
+</tr>
+</table>`;
+}
+
+const state = { host: initialHost };
+
+function readForm(){
+  Object.assign(state,{
+    office:qs("#office").value,
+    name:qs("#name").value||"NOME APELIDO",
+    title:qs("#title").value||"CARGO",
+    hobby:qs("#hobby").value||"Hobby",
+    mobile:qs("#mobile").value||"(+351) 9XX XXX XXX",
+    photo:qs("#photo").value
+  });
+}
+function render(){qs("#preview").innerHTML=signatureHTML(state);}
+
+function buildLink(){
+  readForm();
+  const base=location.origin+location.pathname;
+  const q=new URLSearchParams({
+    o:state.office,
+    n:state.name,
+    t:state.title,
+    h:state.hobby,
+    m:state.mobile,
+    p:state.photo,
+    host:state.host
+  });
+  return `${base}?${q.toString()}`;
+}
+function openSignatureOnly(){window.open(buildLink(),"_blank");}
+async function copyRawHTML(){readForm();await navigator.clipboard.writeText(signatureHTML(state));alert("HTML copiado!");}
+async function copyLinkToClipboard(){await navigator.clipboard.writeText(buildLink());alert("Link copiado!");}
+
+["#office","#name","#title","#hobby","#mobile","#photo"].forEach(id=>{
+  qs(id).addEventListener("input",()=>{readForm();render();});
+});
+qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();openSignatureOnly();});
+qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();copyRawHTML();});
+qs("#copyLinkBtn").addEventListener("click",e=>{e.preventDefault();copyLinkToClipboard();});
+
+/* Modo assinatura isolada via URL */
+const hasSigParams =
+  params.has("n") || params.has("t") || params.has("h") ||
+  params.has("m") || params.has("p"); // host e o NÃO contam para isto
+
+if (hasSigParams){
+  const d=k=>decodeURIComponent((params.get(k)||"").replace(/\+/g," "));
+  document.body.innerHTML = signatureHTML({
+    office:d("o")||"lisboa",
+    name:d("n")||"NOME APELIDO",
+    title:d("t")||"CARGO",
+    hobby:d("h")||"Hobby",
+    mobile:d("m")||"(+351) 9XX XXX XXX",
+    photo:d("p")||"headshot-filipa-freire.png",
+    host:d("host")||DEFAULT_HOST
+  });
+} else {
+  readForm(); render();
+}
+</script>
+</body>
+</html>
