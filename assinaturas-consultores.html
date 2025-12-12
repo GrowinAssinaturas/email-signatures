@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Assinaturas Growin — Builder</title>
+
 <style>
   body{
     font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;
@@ -45,12 +46,7 @@
     cursor:pointer;
   }
   .btn-primary{background:#e6443b;color:#fff}
-  .row{
-    display:flex;
-    gap:8px;
-    flex-wrap:wrap;
-    margin-top:12px;
-  }
+  .row{margin-top:12px}
   .preview-wrap{
     background:#fff;
     border:1px dashed #ddd;
@@ -58,37 +54,34 @@
     padding:16px;
     overflow:auto;
   }
+  #preview{min-height:120px}
+
   @media (max-width:900px){
     .wrap{grid-template-columns:1fr}
   }
 
-  /* Responsive fixes for signature preview */
   @media screen and (max-width:480px){
     .sig-wrap{font-size:70% !important;}
     .sig-col{display:block !important;width:100% !important;}
     .sig-divider{display:none !important;}
     .sig-right{text-align:center !important;}
-    .sig-logo{
-      max-width:170px !important;
-      margin:8px auto 6px !important;
-      display:block !important;
-    }
-    .sig-icons td{padding:0 6px !important;}
+    .sig-logo{max-width:170px !important;margin:8px auto 6px !important;display:block !important;}
     .sig-photo{width:72px !important;height:72px !important;}
     .sig-iso{max-width:56px !important;}
   }
 </style>
 </head>
+
 <body>
-<h1 id="title-builder">Assinaturas Growin — Builder</h1>
-<p class="muted" id="desc-builder">
-  Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo</strong> e <strong>Telemóvel pessoal</strong>.  
+
+<h1>Assinaturas Growin — Builder</h1>
+<p>
+  Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo</strong> e <strong>Telemóvel pessoal</strong>.
   Também podes escolher a morada do escritório.
 </p>
 
-<div class="wrap" id="builder-ui">
+<div class="wrap">
   <div class="card">
-
     <label for="office">Morada</label>
     <select id="office">
       <option value="lisboa">Lisboa — Av. da República</option>
@@ -109,48 +102,44 @@
     </div>
   </div>
 
-  <div>
-    <div class="preview-wrap">
-      <div id="preview"></div>
-    </div>
+  <div class="preview-wrap">
+    <div id="preview"></div>
   </div>
 </div>
 
 <script>
 const qs = s => document.querySelector(s);
 function nobreak(str){return (str||"").trim().replace(/\s+/g,'&nbsp;');}
-const digitsHref = s => {
-  const raw=(s||"").replace(/[^\d+]/g,"");
-  if(/^9\\d{8}$/.test(raw)) return "+351"+raw;
-  return raw || "+3519XXXXXXXX";
-};
+const digitsHref = s => (s||"").replace(/[^\d+]/g,"");
 
 const DEFAULT_HOST = "https://www.growin.com/signatures";
-const params = new URLSearchParams(location.search);
-const initialHost = params.get("host") || DEFAULT_HOST;
 const MOBILE_PLACEHOLDER = "(+351) 9XX XXX XXX";
 
-/* MAPA DE MORADAS */
+/* MORADAS */
 const ADDRESS_MAP = {
   lisboa: "Avenida da República, 57, 4.ºdt, 1050-189, Lisboa",
   porto: "Avenida da Boavista, nº 1773, B2.5, 4100-133 Porto"
 };
 
-function signatureHTML({name,title,mobile,host,office}){
-  const H = (host || DEFAULT_HOST).replace(/\/+$/,"");
+function signatureHTML({name,title,mobile,office}){
+  const H = DEFAULT_HOST;
+  const address = nobreak(ADDRESS_MAP[office] || ADDRESS_MAP.lisboa);
+  const hasMobile = mobile && mobile !== MOBILE_PLACEHOLDER;
 
-  const addrKey = office && ADDRESS_MAP[office] ? office : "lisboa";
-  const addressText = ADDRESS_MAP[addrKey];
-  const addressNB = nobreak(addressText);
+  return `
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="sig-wrap"
+ style="font-family:Arial,Helvetica,sans-serif;color:#333;font-size:60%;">
+<tr>
+<td class="sig-col" style="padding-right:10px">
+  <img src="${H}/sem-foto.png" width="84" height="84" style="border-radius:50%">
+</td>
 
-  const mobileClean = (mobile || "").trim();
-  const hasMobile = !!mobileClean;
+<td class="sig-col" style="padding-right:13px">
+  <table>
+    <tr><td style="font-size:13px;font-weight:800;color:#e6443b">${name}</td></tr>
+    <tr><td style="font-size:10px;font-weight:700;color:#555">${title}</td></tr>
 
-  let telHref = "";
-  let mobileNB = "";
-  if (hasMobile){
-    telHref = digitsHref(mobileClean);
-    mobileNB = nobreak(mobileClean);
-  }
-
-  const photoUrl = `${H}/sem-foto.
+    ${hasMobile ? `
+    <tr><td style="font-size:10px;color:#444;padding-top:4px">
+      <strong style="color:#e6443b">T:</strong>
+      <a href="tel:${digitsHref(mobile)}" style="color:#444;text-decoration:none">
