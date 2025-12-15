@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="pt">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Assinaturas Growin — Builder</title>
+<style>
+  body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,sans-serif;margin:24px;color:#111}
+  .wrap{display:grid;grid-template-columns:360px 1fr;gap:24px;align-items:start}
+  label{display:block;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:#555;margin:12px 0 4px}
+  input,select{width:100%;padding:10px 12px;border:1px solid #d0d0d0;border-radius:8px;font-size:14px}
+  .card{border:1px solid #e6e6e6;border-radius:12px;padding:16px}
+  .btn{display:inline-block;border:0;border-radius:10px;padding:12px 14px;font-weight:600;cursor:pointer}
+  .btn-primary{background:#e6443b;color:#fff}
+  .btn-ghost{background:#f6f6f6}
+  .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  .preview-wrap{background:#fff;border:1px dashed #ddd;border-radius:12px;padding:16px;overflow:auto}
+  @media (max-width:900px){.wrap{grid-template-columns:1fr}}
+  /* Responsive fixes for signature preview */
+  @media screen and (max-width:480px){
+    .sig-wrap{font-size:70% !important;}
+    .sig-col{display:block !important;width:100% !important;}
+    .sig-divider{display:none !important;}
+    .sig-right{text-align:center !important;}
+    .sig-logo{max-width:170px !important;margin:8px auto 6px !important;display:block !important;}
+    .sig-icons td{padding:0 6px !important;}
+    .sig-photo{width:72px !important;height:72px !important;}
+    .sig-iso{max-width:56px !important;}
+  }
+</style>
+</head>
+<body>
+<h1 id="title-builder">Assinaturas Growin — Builder</h1>
+<p class="muted" id="desc-builder">
+  Campos personalizáveis: <strong>Nome</strong>, <strong>Cargo | Hobby</strong> e <strong>Telefone fixo</strong>.  
+  Morada fixa: <strong>Lisboa</strong>.
+</p>
+
+<div class="wrap" id="builder-ui">
+  <div class="card">
+
+    <label for="name">Nome</label>
+    <input id="name" value="Filipa Freire">
+
+    <label for="title">Cargo</label>
+    <input id="title" value="GRAPHIC DESIGNER">
+
+    <label for="hobby">Hobby</label>
+    <input id="hobby" value="Crochet Crafter">
+
+    <label for="phone">Telefone fixo (como deve aparecer)</label>
+    <input id="phone" value="(+351) 21 000 0000">
+
+    <label for="photo">Nome do ficheiro da foto (PNG 240×240 já com aro)</label>
+    <input id="photo" value="headshot-filipa-freire.png">
+
+    <div class="row">
+      <button id="copyBtn" class="btn btn-primary">Copiar assinatura</button>
+      <button id="copyHtmlBtn" class="btn btn-ghost">Copiar HTML</button>
+      <button id="copyLinkBtn" class="btn btn-ghost">Gerar link desta assinatura</button>
+    </div>
+  </div>
+
+  <div>
+    <div class="preview-wrap">
+      <div id="preview"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const qs=s=>document.querySelector(s);
+function nobreak(str){return (str||"").trim().replace(/\s+/g,'&nbsp;');}
+const digitsHref=s=>{
+  const raw=(s||"").replace(/[^\d+]/g,"");
+  if(/^9\\d{8}$/.test(raw)) return "+351"+raw;
+  return raw||"+351XXXXXXXXX";
+};
+
+const DEFAULT_HOST = "https://www.growin.com/signatures";
+const params = new URLSearchParams(location.search);
+const initialHost = params.get("host") || DEFAULT_HOST;
+
+/* MORADA FIXA (LISBOA) */
+const ADDRESS_LISBOA = "Avenida da República, 57, 4.º andar, 1050-189, Lisboa";
+
+function signatureHTML({name,title,hobby,phone,photo,host}){
+  const H=(host||DEFAULT_HOST).replace(/\/+$/,"");
+
+  const addressNB = nobreak(ADDRESS_LISBOA);
+
+  const telHref=digitsHref(phone);
+  const phoneNB=nobreak(phone);
+
+  // nome de ficheiro ou URL completo
+  let photoUrl=(photo||"").trim();
+  if(!photoUrl){
+    photoUrl = `${H}/headshot-default.png`;
+  }
+  if(!/^https?:\/\//i.test(photoUrl) && !photoUrl.startsWith("//")){
+    photoUrl = `${H}/${photoUrl.replace(/^\/+/,"")}`;
+  }
+
+  return `
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" class="sig-wrap"
+ style="border-collapse:collapse;font-family:Arial,Helvetica,sans-serif;color:#333;font-size:60%;">
+<tr>
+  <td class="sig-col" valign="top" style="padding:6px 10px 6px 0;">
+    <img src="${photoUrl}" width="84" height="84" alt="Foto de ${name}"
+         class="sig-photo" style="display:block;border:0;width:84px;height:84px;border-radius:50%;">
+  </td>
+
+  <td class="sig-col" valign="top" style="padding:6px 13px 6px 0;">
+    <table role="presentation">
+      <tr><td style="font-size:13px;font-weight:800;color:#e6443b;">${name}</td></tr>
+      <tr><td style="font-size:10px;font-weight:700;color:#555;">${title} | ${hobby}</td></tr>
+
+      <tr><td style="font-size:10px;color:#444;padding:3px 0;">
+        <strong style="color:#e6443b;">T:</strong>
+        <a href="tel:${telHref}" style="color:#444;text-decoration:none;white-space:nowrap;">
+          ${phoneNB}
+        </a>
+      </td></tr>
+
+      <tr><td style="font-size:9px;color:#666;white-space:nowrap;">
+        <span style="display:inline-block;background:#e6443b;width:14px;height:14px;border-radius:50%;text-align:center;line-height:14px;margin-right:4px;">
+          <img src="${H}/icon-local.png" width="7" height="7" style="vertical-align:middle;border:0;">
+        </span>
+        ${addressNB}
+      </td></tr>
+
+    </table>
+  </td>
+
+  <td class="sig-divider" valign="middle" style="padding:0 13px 0 0;">
+    <table role="presentation" height="84"><tr><td style="border-left:2px solid #e6443b;">&nbsp;</td></tr></table>
+  </td>
+
+  <td class="sig-col sig-right" valign="middle" style="padding:6px 0;">
+    <table role="presentation" align="center">
+      <tr><td align="center" style="padding-bottom:5px;">
+        <img src="${H}/growin-logo.png" alt="Growin"
+             class="sig-logo" style="display:block;margin:0 auto;max-width:152px;height:auto;">
+      </td></tr>
+
+      <tr><td align="center">
+        <table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" class="sig-icons">
+          <tr>
+            <td valign="middle" style="padding-right:5px;">
+              <a href="https://www.growin.com/" target="_blank"
+                 style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;">
+                <img src="${H}/icon-website.png" width="8" height="8" style="margin-top:5px;border:0;">
+              </a>
+            </td>
+
+            <td valign="middle" style="padding-right:6px;">
+              <a href="https://www.linkedin.com/company/growin/" target="_blank"
+                 style="display:inline-block;background:#e6443b;width:18px;height:18px;border-radius:50%;text-align:center;">
+                <img src="${H}/icon-linkedin.png" width="8" height="8" style="margin-top:5px;border:0%;">
+              </a>
+            </td>
+
+            <td valign="middle">
+              <img src="${H}/certificacao-iso.png" alt="BSI ISO/IEC 27017"
+                   class="sig-iso" style="max-width:42px;height:auto;border:0;">
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </td>
+</tr>
+</table>`;
+}
+
+const state = { host: initialHost };
+
+function readForm(){
+  Object.assign(state,{
+    name:qs("#name").value||"NOME APELIDO",
+    title:qs("#title").value||"CARGO",
+    hobby:qs("#hobby").value||"Hobby",
+    phone:qs("#phone").value||"(+351) XX XXX XXXX",
+    photo:qs("#photo").value
+  });
+}
+function render(){qs("#preview").innerHTML=signatureHTML(state);}
+
+function buildLink(){
+  readForm();
+  const base=location.origin+location.pathname;
+  const q=new URLSearchParams({
+    n:state.name,
+    t:state.title,
+    h:state.hobby,
+    f:state.phone,
+    p:state.photo,
+    host:state.host
+  });
+  return `${base}?${q.toString()}`;
+}
+function openSignatureOnly(){window.open(buildLink(),"_blank");}
+async function copyRawHTML(){readForm();await navigator.clipboard.writeText(signatureHTML(state));alert("HTML copiado!");}
+async function copyLinkToClipboard(){await navigator.clipboard.writeText(buildLink());alert("Link copiado!");}
+
+["#name","#title","#hobby","#phone","#photo"].forEach(id=>{
+  qs(id).addEventListener("input",()=>{readForm();render();});
+});
+qs("#copyBtn").addEventListener("click",e=>{e.preventDefault();openSignatureOnly();});
+qs("#copyHtmlBtn").addEventListener("click",e=>{e.preventDefault();copyRawHTML();});
+qs("#copyLinkBtn").addEventListener("click",e=>{e.preventDefault();copyLinkToClipboard();});
+
+/* Modo assinatura isolada via URL */
+const hasSigParams =
+  params.has("n") || params.has("t") || params.has("h") ||
+  params.has("f") || params.has("p"); // host não conta
+
+if (hasSigParams){
+  const d=k=>decodeURIComponent((params.get(k)||"").replace(/\\+/g," "));
+  document.body.innerHTML = signatureHTML({
+    name:d("n")||"NOME APELIDO",
+    title:d("t")||"CARGO",
+    hobby:d("h")||"Hobby",
+    phone:d("f")||"(+351) XX XXX XXXX",
+    photo:d("p")||"headshot-filipa-freire.png",
+    host:d("host")||DEFAULT_HOST
+  });
+} else {
+  readForm(); render();
+}
+</script>
+</body>
+</html>
